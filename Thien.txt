@@ -1,0 +1,18 @@
+TODO:
+what to do with missing data?
+Dummy code buildings, add to regression
+Use noise event
+
+
+DONE:
+group average by month day hour
+dummy code for green (by looking at map)
+combine weather + noise locations with noise inside weather
+combine 4 files + [month date hour rainin temp_qc3] !NA
+fit glm: weekend + rain + temp + hour (sin-cos) = noise level
+
+FAILED:
+combine weather+noise with coordinates, by:
+	assign coordinates to weather
+	assign noise-s to weather (based on distance -> how far?)
+	take average assigned noise-s
