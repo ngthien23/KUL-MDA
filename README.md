@@ -55,3 +55,4 @@ https://aws.amazon.com/education/awseducate/
 
 ## Reports
 The slides are accessible at [Google Drive](https://docs.google.com/presentation/d/124BeehQEYAofHWoPmbxH-LTE-0IysYX_X7drtxZiIWg/edit).
+The 2-page report can be accessible at [Overleaf](https://www.overleaf.com/2187527679nrtqhjsdmhdp).
