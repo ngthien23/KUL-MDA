@@ -34,5 +34,24 @@ The `Additional_Date` folder contains several CSV files related to the events in
 - KU leuven semester dates are retrived from [here](https://www.kuleuven.be/english/about-kuleuven/calendars/2021-2022/ku-leuven-leuven-main-campus).
 - Concert dates in a specific hall in the center of Leuven are retrieved from [here](https://www.hetdepot.be/overzicht-concerten-corona).
 
+## Resources
+### deployed (draft)
+http://mydashapp-env.eba-egg3ihi2.eu-north-1.elasticbeanstalk.com/
+
+### explaning the model
+https://towardsdatascience.com/a-novel-approach-to-feature-importance-shapley-additive-explanations-d18af30fc21b
+
+### dynamic plots / visualization inspirations
+https://towardsdatascience.com/animated-bar-plot-in-python-for-time-series-data-8809dbdf9bc
+https://medium.com/@vermavinay982/dynamic-graph-plotting-matplotlib-63c94d8fa99f
+https://app.flourish.studio/templates#template-time-map
+
+### external data - building in Leuven
+https://download.vlaanderen.be/Producten/Detail?id=1&title=GRBgis
+https://www.mdpi.com/2071-1050/14/10/5769 
+
+### AWS resources
+https://aws.amazon.com/education/awseducate/
+
 ## Reports
 The slides are accessible at [Google Drive](https://docs.google.com/presentation/d/124BeehQEYAofHWoPmbxH-LTE-0IysYX_X7drtxZiIWg/edit).
