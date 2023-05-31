@@ -4,7 +4,7 @@ import dash
 import folium
 from folium.plugins import HeatMap
 import dash_bootstrap_components as dbc
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 from dash import html,dcc
 from flask import Flask
 from datetime import date, datetime
@@ -24,33 +24,35 @@ metadata_dict={'MP 01: Naamsestraat 35  Maxim': (50.87725712,4.700745598),
                'MP 07: Naamsestraat 81':(50.87391635,4.700123169),
                'MP 08: bis - Vrijthof': (50.87902068,4.701208869)}
 
-# app.layout=html.Div(children=[html.H1('Noise Heatmap of Leuven'),
-#                               dcc.DatePickerSingle(id='date-picker',
-#                                           date=date(2022,1,12)),
-#                                           dcc.Input(id='time-picker', value='12:00', type='text'),
-#                                           html.Iframe(id='heatmap', width='60%', height=600)])
-
-date_input=dbc.Row([dbc.Label('Select date:', html_for='date-picker',width=2),
-                    dbc.Col(dcc.DatePickerSingle(id='date-picker', date=date(2022,1,12)), width=10,),],
+date_input=dbc.Row([dbc.Label('Select date:', html_for='date-picker',width=10),
+                    dbc.Col(dcc.DatePickerSingle(id='date-picker', date=date(2022,12,12)), width=8,),],
                     className='mb-3')
 
-time_input=dbc.Row([dbc.Label('Select Time:', html_for='time-picker', width=2),
+time_input=dbc.Row([dbc.Label('Select Time:', html_for='time-picker', width=10),
                     dbc.Col(dcc.Input(id='time-picker', value='12:00', type='text'), width=10,),], className='mb-3')
 
 app.layout=dbc.Container([dbc.Row([dbc.Col(html.H1('Noise Heatmap of Leuven', className='text-center text-primary, mb-4'), width=12)]),
                           dbc.Row([dbc.Col([date_input,time_input], width={'size':4, 'offset':2})]),
-                          dbc.Row([dbc.Col(html.Iframe(id='heatmap', width='100%', height=600), width={'size':8, 'offset':2}),],
+                          dbc.Row([dbc.Col(html.Div(id='error-message', className='text-centered text-danger'), width={'size':8, 'offset':2})]),
+                          dbc.Row([dbc.Col(html.Iframe(id='heatmap', width='100%', height=650), width={'size':8, 'offset':2}),],
                                     align='center', style={'height':'60%'})], style={'backgroundColor': '#c6ece6', 'height':'100%'}, fluid=True)
 
-@app.callback(Output('heatmap', 'srcDoc'),
+@app.callback([Output('heatmap', 'srcDoc'),
+               Output('error-message', 'children')],
               [Input('date-picker', 'date'),
                Input('time-picker', 'value')])
 def update_heatmap(selected_date,selected_time):
-    query=f'{selected_date} {selected_time}'
-    # print(f'Query is {query}')
+    date=datetime.strptime(selected_date, '%Y-%m-%d')
+    reformatted_date=date.strftime('%Y-%d-%m')
+    query=f'{reformatted_date} {selected_time}'
+    print(f'Query is {query}')
     filtered_data=df[df['timestamp']==query]
+    print(f'Filtered data frame: \n {filtered_data}')
+    if filtered_data.empty:
+        m=folium.Map(location=[50.87532021,4.700002902], zoom_start=16)
+        return m._repr_html_(), 'Noise data is only available for the period between January 12 2022 and December 12 2022, please choose a date in this range, and specify the time in a "00:00" format'
     map_points=[]
-    # print(f'Filtered data frame: \n {filtered_data}')
+
     for label in ['MP 01: Naamsestraat 35  Maxim','MP 02: Naamsestraat 57 Xior','MP 03: Naamsestraat 62 Taste','MP 04: His & Hers','MP 05: Calvariekapel KU Leuven','MP 06: Parkstraat 2 La Filosofia','MP 07: Naamsestraat 81','MP 08: bis - Vrijthof']:
         latitude, longitude=metadata_dict[label]
         value_noise=filtered_data[label].values
@@ -63,10 +65,10 @@ def update_heatmap(selected_date,selected_time):
     m=folium.Map(location=[50.87532021,4.700002902], zoom_start=16)
     HeatMap(data=map_points, radius=8, max_zoom=13).add_to(m)
 
-    return m._repr_html_()
+    return m._repr_html_(),''
 
 if __name__ == '__main__':
-    application.run(debug=True)
+    application.run(debug=False)
 
 
 
