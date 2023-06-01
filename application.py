@@ -8,6 +8,7 @@ from dash.dependencies import Input, Output, State
 from dash import html,dcc
 from flask import Flask
 from datetime import date, datetime
+import plotly.graph_objects as go
 
 application = Flask(__name__)
 
@@ -17,8 +18,13 @@ df=pd.read_csv('./max_noise_per_minute_per_location.csv')
 max_noise=df[['MP 01: Naamsestraat 35  Maxim','MP 02: Naamsestraat 57 Xior','MP 03: Naamsestraat 62 Taste','MP 04: His & Hers','MP 05: Calvariekapel KU Leuven','MP 06: Parkstraat 2 La Filosofia','MP 07: Naamsestraat 81','MP 08: bis - Vrijthof']].max().max()
 min_noise=df[['MP 01: Naamsestraat 35  Maxim','MP 02: Naamsestraat 57 Xior','MP 03: Naamsestraat 62 Taste','MP 04: His & Hers','MP 05: Calvariekapel KU Leuven','MP 06: Parkstraat 2 La Filosofia','MP 07: Naamsestraat 81','MP 08: bis - Vrijthof']].min().min()
 print(f'Max noise is: {max_noise} and Min noise is: {min_noise}')
-# df[['MP 01: Naamsestraat 35  Maxim','MP 02: Naamsestraat 57 Xior','MP 03: Naamsestraat 62 Taste','MP 04: His & Hers','MP 05: Calvariekapel KU Leuven','MP 06: Parkstraat 2 La Filosofia','MP 07: Naamsestraat 81','MP 08: bis - Vrijthof']]=(df[['MP 01: Naamsestraat 35  Maxim','MP 02: Naamsestraat 57 Xior','MP 03: Naamsestraat 62 Taste','MP 04: His & Hers','MP 05: Calvariekapel KU Leuven','MP 06: Parkstraat 2 La Filosofia','MP 07: Naamsestraat 81','MP 08: bis - Vrijthof']]-min_noise)/(max_noise-min_noise)
 
+def create_color_scale():
+    color_scale=[[0, 'blue'],[0.4, 'lime'],[0.6,'yellow'],[0.8,'orange'], [1,'red']]
+    values=[30,60,80,100,120]
+    fig=go.Figure(data=go.Heatmap(z=[values,values],x=['',''],y=['',''],zmin=0,zmax=120, colorscale=color_scale, colorbar=dict(tickmode='array',tickvals=[30,60,80,100,120],ticktext=['30 dB', '60 dB', '80 dB', '100 dB', '120 dB']),showscale=True))
+    fig.update_layout(width=160, height=600)
+    return fig
 metadata_dict={'MP 01: Naamsestraat 35  Maxim': (50.87725712,4.700745598),
                'MP 02: Naamsestraat 57 Xior': (50.87655782,4.70069841),
                'MP 03: Naamsestraat 62 Taste': (50.87590806,4.700202903),
@@ -36,9 +42,10 @@ time_input=dbc.Row([dbc.Label('Select Time:', html_for='time-picker', width=10),
                     dbc.Col(dcc.Input(id='time-picker', value='12:00', type='text'), width=10,),], className='mb-3')
 
 app.layout=dbc.Container([dbc.Row([dbc.Col(html.H1('Noise Heatmap of Leuven', className='text-center text-primary, mb-4'), width=12)]),
-                          dbc.Row([dbc.Col([date_input,time_input], width={'size':4, 'offset':2})]),
-                          dbc.Row([dbc.Col(html.Div(id='error-message', className='text-centered text-danger'), width={'size':8, 'offset':2})]),
-                          dbc.Row([dbc.Col(html.Iframe(id='heatmap', width='100%', height=650), width={'size':8, 'offset':2}),],
+                          dbc.Row([dbc.Col([date_input,time_input], width={'size':8, 'offset':1})]),
+                          dbc.Row([dbc.Col(html.Div(id='error-message', className='text-centered text-danger'), width={'size':8, 'offset':1})]),
+                          dbc.Row([dbc.Col(html.Iframe(id='heatmap', width='100%', height=650), width={'size':8, 'offset':1}),
+                                   dbc.Col(dcc.Graph(id='colorscale', figure=create_color_scale()), width={'size':1, 'offset':0}),],
                                     align='center', style={'height':'60%'})], style={'backgroundColor': '#c6ece6', 'height':'100%'}, fluid=True)
 
 @app.callback([Output('heatmap', 'srcDoc'),
@@ -67,7 +74,7 @@ def update_heatmap(selected_date,selected_time):
 
     gradient={0.0: 'blue', ((60-min_noise)/(max_noise-min_noise)): 'lime', ((80-min_noise)/(max_noise-min_noise)): 'yellow', ((100-min_noise)/(max_noise-min_noise)): 'orange', 1: 'red'}
     m=folium.Map(location=[50.87532021,4.700002902], zoom_start=16)
-    HeatMap(data=map_points, radius=16, max_zoom=13, gradient=gradient, blur=12).add_to(m)
+    HeatMap(data=map_points, radius=16, max_zoom=13, gradient=gradient, blur=14).add_to(m)
 
     return m._repr_html_(),''
 
