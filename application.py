@@ -16,7 +16,8 @@ app = dash.Dash(__name__,server=application,external_stylesheets=[dbc.themes.MAT
 df=pd.read_csv('./max_noise_per_minute_per_location.csv')
 max_noise=df[['MP 01: Naamsestraat 35  Maxim','MP 02: Naamsestraat 57 Xior','MP 03: Naamsestraat 62 Taste','MP 04: His & Hers','MP 05: Calvariekapel KU Leuven','MP 06: Parkstraat 2 La Filosofia','MP 07: Naamsestraat 81','MP 08: bis - Vrijthof']].max().max()
 min_noise=df[['MP 01: Naamsestraat 35  Maxim','MP 02: Naamsestraat 57 Xior','MP 03: Naamsestraat 62 Taste','MP 04: His & Hers','MP 05: Calvariekapel KU Leuven','MP 06: Parkstraat 2 La Filosofia','MP 07: Naamsestraat 81','MP 08: bis - Vrijthof']].min().min()
-df[['MP 01: Naamsestraat 35  Maxim','MP 02: Naamsestraat 57 Xior','MP 03: Naamsestraat 62 Taste','MP 04: His & Hers','MP 05: Calvariekapel KU Leuven','MP 06: Parkstraat 2 La Filosofia','MP 07: Naamsestraat 81','MP 08: bis - Vrijthof']]=(df[['MP 01: Naamsestraat 35  Maxim','MP 02: Naamsestraat 57 Xior','MP 03: Naamsestraat 62 Taste','MP 04: His & Hers','MP 05: Calvariekapel KU Leuven','MP 06: Parkstraat 2 La Filosofia','MP 07: Naamsestraat 81','MP 08: bis - Vrijthof']]-min_noise)/(max_noise-min_noise)
+print(f'Max noise is: {max_noise} and Min noise is: {min_noise}')
+# df[['MP 01: Naamsestraat 35  Maxim','MP 02: Naamsestraat 57 Xior','MP 03: Naamsestraat 62 Taste','MP 04: His & Hers','MP 05: Calvariekapel KU Leuven','MP 06: Parkstraat 2 La Filosofia','MP 07: Naamsestraat 81','MP 08: bis - Vrijthof']]=(df[['MP 01: Naamsestraat 35  Maxim','MP 02: Naamsestraat 57 Xior','MP 03: Naamsestraat 62 Taste','MP 04: His & Hers','MP 05: Calvariekapel KU Leuven','MP 06: Parkstraat 2 La Filosofia','MP 07: Naamsestraat 81','MP 08: bis - Vrijthof']]-min_noise)/(max_noise-min_noise)
 
 metadata_dict={'MP 01: Naamsestraat 35  Maxim': (50.87725712,4.700745598),
                'MP 02: Naamsestraat 57 Xior': (50.87655782,4.70069841),
@@ -64,9 +65,9 @@ def update_heatmap(selected_date,selected_time):
         map_points.append((latitude, longitude, noise_level))
     print(f'Map points: \n {map_points}')
 
-    gradient = {0.0: 'blue', 0.3: 'yellow', 1: 'red'}
+    gradient={0.0: 'blue', ((60-min_noise)/(max_noise-min_noise)): 'lime', ((80-min_noise)/(max_noise-min_noise)): 'yellow', ((100-min_noise)/(max_noise-min_noise)): 'orange', 1: 'red'}
     m=folium.Map(location=[50.87532021,4.700002902], zoom_start=16)
-    HeatMap(data=map_points, radius=8, max_zoom=13, max_val=0, gradient=gradient).add_to(m)
+    HeatMap(data=map_points, radius=16, max_zoom=13, gradient=gradient, blur=12).add_to(m)
 
     return m._repr_html_(),''
 
