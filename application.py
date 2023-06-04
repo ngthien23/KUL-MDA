@@ -20,7 +20,7 @@ df=pd.read_csv('./max_noise_per_hour_per_location.csv')
 #The max and minimum of the data are determined
 max_noise=df[['MP 01: Naamsestraat 35  Maxim','MP 02: Naamsestraat 57 Xior','MP 03: Naamsestraat 62 Taste','MP 05: Calvariekapel KU Leuven','MP 06: Parkstraat 2 La Filosofia','MP 07: Naamsestraat 81']].max().max()
 min_noise=df[['MP 01: Naamsestraat 35  Maxim','MP 02: Naamsestraat 57 Xior','MP 03: Naamsestraat 62 Taste','MP 05: Calvariekapel KU Leuven','MP 06: Parkstraat 2 La Filosofia','MP 07: Naamsestraat 81']].min().min()
-print(f'Max noise is: {max_noise} and Min noise is: {min_noise}')
+# print(f'Max noise is: {max_noise} and Min noise is: {min_noise}')
 
 #A function is defined to create a bar plot showing the gradient of colors used for the heatmap with the numeric values that define these color ranges
 def create_color_scale():
@@ -69,9 +69,9 @@ def update_heatmap(selected_date,selected_time):
     # date=datetime.strptime(selected_date, '%Y-%m-%d')
     # reformatted_date=date.strftime('%Y-%d-%m')
     query=f'{selected_date} {selected_time}:00'
-    print(f'Query is {query}')
+    # print(f'Query is {query}')
     filtered_data=df[df['timestamp']==query]
-    print(f'Filtered data frame: \n {filtered_data}')
+    # print(f'Filtered data frame: \n {filtered_data}')
     #This part displays an error message and an empty map of Leuven if the user selected time and date are not in the range of available data
     if filtered_data.empty:
         m=folium.Map(location=[50.87532021,4.700002902], zoom_start=16)
@@ -84,7 +84,7 @@ def update_heatmap(selected_date,selected_time):
         noise_level=value_noise[0]
         # print(f'Noise level is: {noise_level}')
         map_points.append((latitude, longitude, noise_level))
-    print(f'Map points: \n {map_points}')
+    # print(f'Map points: \n {map_points}')
 
     #This defined the gradient of colors used for the heatmap and the ranges of values for each color
     gradient={0.0: 'blue', ((60-min_noise)/(max_noise-min_noise)): 'lime', ((80-min_noise)/(max_noise-min_noise)): 'yellow', ((100-min_noise)/(max_noise-min_noise)): 'orange', 1: 'red'}
