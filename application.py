@@ -1,15 +1,15 @@
-import pandas as pd
-import plotly.express as px
+import os
 import dash
-import folium
-from folium.plugins import HeatMap
+from dash import html,dcc
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
-from dash import html,dcc
+import pandas as pd
+import folium
+from folium.plugins import HeatMap
 from flask import Flask
 from datetime import date, datetime
 import plotly.graph_objects as go
-import os
+import plotly.express as px
 
 #Here the application's server is setup in flask so that it is compatible by default with AWS Elastic Beanstalk. It is called 'application' because that is a requirement for the selected deployment option 
 application = Flask(__name__)
