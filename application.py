@@ -9,6 +9,7 @@ from dash import html,dcc
 from flask import Flask
 from datetime import date, datetime
 import plotly.graph_objects as go
+import os
 
 #Here the application's server is setup in flask so that it is compatible by default with AWS Elastic Beanstalk. It is called 'application' because that is a requirement for the selected deployment option 
 application = Flask(__name__)
@@ -52,13 +53,63 @@ date_input=dbc.Row([dbc.Label('Select date:', html_for='date-picker',width=10),
 time_input=dbc.Row([dbc.Label('Select Time:', html_for='time-picker', width=10),
                     dbc.Col(dcc.Dropdown(id='time-picker', options=[{'label': time, 'value': time} for time in times], value=times[0]), width=10,),], className='mb-3')
 
+image1_path = 'shap.png'
+image2_path = 'shap2.png'
+
 #The app's layout is define using row and column components to organize it
-app.layout=dbc.Container([dbc.Row([dbc.Col(html.H1('Noise Heatmap of Leuven', className='text-center text-primary, mb-4'), width=12)]),
-                          dbc.Row([dbc.Col([date_input,time_input], width={'size':8, 'offset':1})]),
-                          dbc.Row([dbc.Col(html.Div(id='error-message', className='text-centered text-danger'), width={'size':8, 'offset':1})]),
-                          dbc.Row([dbc.Col(html.Iframe(id='heatmap', width='100%', height=650), width={'size':8, 'offset':1}),
-                                   dbc.Col(dcc.Graph(id='colorscale', figure=create_color_scale()), width={'size':1, 'offset':0}),],
-                                    align='center', style={'height':'60%'})], style={'backgroundColor': '#c6ece6', 'height':'100%'}, fluid=True)
+app.layout = dbc.Container(
+    [
+        dbc.Row(
+            [
+                dbc.Col(
+                    html.H1('Noise Heatmap of Leuven', className='text-center text-primary, mb-4'),
+                    width=12
+                )
+            ]
+        ),
+        dbc.Row(
+            [
+                dbc.Col([date_input, time_input], width={'size': 8, 'offset': 1})
+            ]
+        ),
+        dbc.Row(
+            [
+                dbc.Col(
+                    html.Div(id='error-message', className='text-centered text-danger'),
+                    width={'size': 8, 'offset': 1}
+                )
+            ]
+        ),
+        dbc.Row(
+            [
+                dbc.Col(
+                    html.Iframe(id='heatmap', width='100%', height=650),
+                    width={'size': 8, 'offset': 1},
+                    style={'position': 'relative'}
+                ),
+                dbc.Col(
+                    dcc.Graph(id='colorscale', figure=create_color_scale()),
+                    width={'size': 1, 'offset': 0},
+                    style={'position': 'relative'}
+                )
+            ],
+            align='center',
+            style={'height': '60%'}
+        ),
+        html.Div(
+            [
+                html.Iframe(
+                    src="https://public.flourish.studio/visualisation/13994608/embed",
+                    style={"width": "100%", "height": "800px", "border": "double"}
+                )
+            ],
+            style={'position': 'center', 'bottom': '0', 'left': '0', 'width': '100%'}
+        )
+    ],
+    style={'backgroundColor': '#c6ece6', 'height': '100%'},
+    fluid=True
+)
+
 
 #A function with call back is created so that the heatmap is updated for the data and time input by the user
 @app.callback([Output('heatmap', 'srcDoc'),
