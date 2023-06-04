@@ -16,10 +16,10 @@ application = Flask(__name__)
 # The app is created in Dash using Flask as the server
 app = dash.Dash(__name__,server=application,external_stylesheets=[dbc.themes.MATERIA])
 #The processed data is read from the csv file
-df=pd.read_csv('./max_noise_per_minute_per_location.csv')
+df=pd.read_csv('./max_noise_per_hour_per_location.csv')
 #The max and minimum of the data are determined
-max_noise=df[['MP 01: Naamsestraat 35  Maxim','MP 02: Naamsestraat 57 Xior','MP 03: Naamsestraat 62 Taste','MP 04: His & Hers','MP 05: Calvariekapel KU Leuven','MP 06: Parkstraat 2 La Filosofia','MP 07: Naamsestraat 81','MP 08: bis - Vrijthof']].max().max()
-min_noise=df[['MP 01: Naamsestraat 35  Maxim','MP 02: Naamsestraat 57 Xior','MP 03: Naamsestraat 62 Taste','MP 04: His & Hers','MP 05: Calvariekapel KU Leuven','MP 06: Parkstraat 2 La Filosofia','MP 07: Naamsestraat 81','MP 08: bis - Vrijthof']].min().min()
+max_noise=df[['MP 01: Naamsestraat 35  Maxim','MP 02: Naamsestraat 57 Xior','MP 03: Naamsestraat 62 Taste','MP 05: Calvariekapel KU Leuven','MP 06: Parkstraat 2 La Filosofia','MP 07: Naamsestraat 81']].max().max()
+min_noise=df[['MP 01: Naamsestraat 35  Maxim','MP 02: Naamsestraat 57 Xior','MP 03: Naamsestraat 62 Taste','MP 05: Calvariekapel KU Leuven','MP 06: Parkstraat 2 La Filosofia','MP 07: Naamsestraat 81']].min().min()
 print(f'Max noise is: {max_noise} and Min noise is: {min_noise}')
 
 #A function is defined to create a bar plot showing the gradient of colors used for the heatmap with the numeric values that define these color ranges
@@ -40,6 +40,8 @@ metadata_dict={'MP 01: Naamsestraat 35  Maxim': (50.87725712,4.700745598),
                'MP 07: Naamsestraat 81':(50.87391635,4.700123169),
                'MP 08: bis - Vrijthof': (50.87902068,4.701208869)}
 
+#Options of the dropdown menu for the time
+times = ["{:02d}:00".format(i) for i in range(24)]
 ##Dash-bootstrap components is used in conjunction with dash to provide more efficient customization of the app's layout
 #The component for taking the input for the date is created
 date_input=dbc.Row([dbc.Label('Select date:', html_for='date-picker',width=10),
@@ -48,7 +50,7 @@ date_input=dbc.Row([dbc.Label('Select date:', html_for='date-picker',width=10),
 
 #The component for taking the input for the time is created
 time_input=dbc.Row([dbc.Label('Select Time:', html_for='time-picker', width=10),
-                    dbc.Col(dcc.Input(id='time-picker', value='12:00', type='text'), width=10,),], className='mb-3')
+                    dbc.Col(dcc.Dropdown(id='time-picker', options=[{'label': time, 'value': time} for time in times], value=times[0]), width=10,),], className='mb-3')
 
 #The app's layout is define using row and column components to organize it
 app.layout=dbc.Container([dbc.Row([dbc.Col(html.H1('Noise Heatmap of Leuven', className='text-center text-primary, mb-4'), width=12)]),
@@ -64,19 +66,19 @@ app.layout=dbc.Container([dbc.Row([dbc.Col(html.H1('Noise Heatmap of Leuven', cl
               [Input('date-picker', 'date'),
                Input('time-picker', 'value')])
 def update_heatmap(selected_date,selected_time):
-    date=datetime.strptime(selected_date, '%Y-%m-%d')
-    reformatted_date=date.strftime('%Y-%d-%m')
-    query=f'{reformatted_date} {selected_time}'
+    # date=datetime.strptime(selected_date, '%Y-%m-%d')
+    # reformatted_date=date.strftime('%Y-%d-%m')
+    query=f'{selected_date} {selected_time}:00'
     print(f'Query is {query}')
     filtered_data=df[df['timestamp']==query]
     print(f'Filtered data frame: \n {filtered_data}')
     #This part displays an error message and an empty map of Leuven if the user selected time and date are not in the range of available data
     if filtered_data.empty:
         m=folium.Map(location=[50.87532021,4.700002902], zoom_start=16)
-        return m._repr_html_(), 'Noise data is only available for the period between December 1 2022 and December 12 2022, please choose a date in this range, and specify the time in a "00:00" format'
+        return m._repr_html_(), 'Noise data is only available for days 3 to 12 of each month for all months of year 2022, and only between the hours 17:00 and 03:00, please choose a date and time in one of these ranges.'
     map_points=[]
     #This pairs the coordinates with the noise level data to create the points that will be shown by the heatmap
-    for label in ['MP 01: Naamsestraat 35  Maxim','MP 02: Naamsestraat 57 Xior','MP 03: Naamsestraat 62 Taste','MP 04: His & Hers','MP 05: Calvariekapel KU Leuven','MP 06: Parkstraat 2 La Filosofia','MP 07: Naamsestraat 81','MP 08: bis - Vrijthof']:
+    for label in ['MP 01: Naamsestraat 35  Maxim','MP 02: Naamsestraat 57 Xior','MP 03: Naamsestraat 62 Taste','MP 05: Calvariekapel KU Leuven','MP 06: Parkstraat 2 La Filosofia','MP 07: Naamsestraat 81']:
         latitude, longitude=metadata_dict[label]
         value_noise=filtered_data[label].values
         noise_level=value_noise[0]
