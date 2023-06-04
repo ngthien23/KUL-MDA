@@ -103,7 +103,7 @@ app.layout = dbc.Container(
                     style={"width": "100%", "height": "800px", "border": "double"}
                 )
             ],
-            style={'position': 'center', 'bottom': '0', 'left': '0', 'width': '100%'}
+            style={'position': 'relative', 'margin': '0 auto', 'width': '85%'}
         )
     ],
     style={'backgroundColor': '#c6ece6', 'height': '100%'},
