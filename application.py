@@ -17,7 +17,7 @@ application = Flask(__name__)
 # The app is created in Dash using Flask as the server
 app = dash.Dash(__name__,server=application,external_stylesheets=[dbc.themes.MATERIA])
 #The processed data is read from the csv file
-df=pd.read_csv('./max_noise_per_hour_per_location.csv')
+df=pd.read_csv('./out/max_noise_per_hour_per_location.csv')
 #The max and minimum of the data are determined
 max_noise=df[['MP 01: Naamsestraat 35  Maxim','MP 02: Naamsestraat 57 Xior','MP 03: Naamsestraat 62 Taste','MP 05: Calvariekapel KU Leuven','MP 06: Parkstraat 2 La Filosofia','MP 07: Naamsestraat 81']].max().max()
 min_noise=df[['MP 01: Naamsestraat 35  Maxim','MP 02: Naamsestraat 57 Xior','MP 03: Naamsestraat 62 Taste','MP 05: Calvariekapel KU Leuven','MP 06: Parkstraat 2 La Filosofia','MP 07: Naamsestraat 81']].min().min()
@@ -52,9 +52,6 @@ date_input=dbc.Row([dbc.Label('Select date:', html_for='date-picker',width=10),
 #The component for taking the input for the time is created
 time_input=dbc.Row([dbc.Label('Select Time:', html_for='time-picker', width=10),
                     dbc.Col(dcc.Dropdown(id='time-picker', options=[{'label': time, 'value': time} for time in times], value=times[0]), width=10,),], className='mb-3')
-
-image1_path = 'shap.png'
-image2_path = 'shap2.png'
 
 #The app's layout is define using row and column components to organize it
 app.layout = dbc.Container(
