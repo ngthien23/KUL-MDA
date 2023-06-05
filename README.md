@@ -4,7 +4,7 @@ This repositotry contains the codes for the Modern Data Analytics exam project i
 
 ## Installation
 Download and extract original data sets to base folder, extract to 'weather', 'noise events', 'noise level', 'noise percentiled'.
-Some preprocessed datasets are in 'ThienNguyen/out'.
+Some preprocessed datasets are in '/out'.
 
 
 ## Locations of interest
