@@ -1,0 +1,2 @@
+count number of buildings surrounding a building / type of building
+are buildings are align in a way => noise propagation
